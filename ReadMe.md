@@ -2,7 +2,7 @@
 
 
 This project is a Gazebo+ROS based simulator that aims to make Unmaned Aerial Vehicle simulations easier to use and customize. The project’s philosophy is to create gazebo plugins and definition files for mechanical parts, sensors, and interfaces as generic as possible in order to use later them as plug and play “lego” bricks. The components are developed to be as physical representative as possible, especially on the aerodynamics of the UAV’s mechanical parts. The project allows also “Software-In-The-Loop” simulation with the PX4 firmware for flight controllers (see https://github.com/PX4/PX4-Autopilot).
-For further information, a [Wiki](https://gitlab.inria.fr/chroma/drones/drone-simulator/-/wikis/home) is available for this project.
+For further information, a [Wiki](https://github.com/Chroma-CITI/QUARTZ-simulator.git/-/wikis/home) is available for this project.
 
 ![Alt text](media/Capture d'écran 2018-10-23 09:51:13.png?raw=true "Simulated IntelAero & Crazyflie")
 
@@ -47,7 +47,7 @@ You need to install at least [ROS Kinetic & Gazebo 7](http://wiki.ros.org/kineti
 
 Install
 ~~~sh
-git clone https://gitlab.inria.fr/chroma/drone-simulator.git
+git clone https://github.com/Chroma-CITI/QUARTZ-simulator.git drone-simulator
 cd drone-simulator
 ./init.sh
 export DIR_DRONE_SIMULATOR=`pwd`

@@ -57,9 +57,9 @@ RUN mkdir -p $ROS_WS/src
 WORKDIR $ROS_WS
 
 # Clone the repository and get the commit to be checkout at from the docker-compose.yaml file
-ARG BRANCH='dev/projectAVENUE'
+ARG BRANCH='main'
 ARG BRANCH_COMMIT=$BRANCH # Checkout the last commit per default
-RUN git clone --single-branch --branch $BRANCH https://gitlab.inria.fr/chroma/drone-simulator.git $ROS_WS/src/drone-simulator \ 
+RUN git clone --single-branch --branch $BRANCH https://github.com/Chroma-CITI/QUARTZ-simulator.git $ROS_WS/src/drone-simulator \ 
     && cd $ROS_WS/src/drone-simulator/ \
     && echo "The commit to be check out is: $BRANCH_COMMIT" \
     && git checkout $BRANCH_COMMIT \
