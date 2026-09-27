@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Macro to add an IMU. -->
+  <xacro:macro name="imu_macro"
+    params="
+      robot_namespace
+      parent_link
+      name
+      topic
+      mass
+      freq
+      gyroscope_noise_density
+      gyroscope_random_walk
+      gyroscope_bias_correlation_time
+      gyroscope_turn_on_bias_sigma
+      accelerometer_noise_density
+      accelerometer_random_walk
+      accelerometer_bias_correlation_time
+      accelerometer_turn_on_bias_sigma
+      *inertia
+      *origin">
+
+    <!-- IMU link -->
+    <link name="${robot_namespace}/${name}_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="${mass}" />  <!-- [kg] -->
+        <xacro:insert_block name="inertia" />
+      </inertial>
+    </link>
+
+    <!-- IMU joint -->
+    <joint name="${robot_namespace}_${name}_joint" type="revolute">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${robot_namespace}/${name}_link" />
+      <limit upper="0" lower="0" effort="0" velocity="0" />
+    </joint>
+
+    <!-- IMU plugin -->
+    <gazebo>
+        <plugin filename="libgazebo_plugin__imu.so" name="${robot_namespace}_${name}_plugin">
+            <!-- A good description of the IMU parameters can be found in the kalibr documentation:
+             https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model-and-Intrinsics -->
+            <robot_namespace>${robot_namespace}</robot_namespace> <!-- (string, required): ros robot_namespace in which the messages are published -->
+            <link_name>${robot_namespace}/${name}_link</link_name> <!-- (string, required): name of the body which holds the IMU sensor -->
+            <imu_topic>${topic}</imu_topic> <!-- (string): name of the sensor output topic and prefix of service names (defaults to imu) -->
+            <freq>${freq}</freq> <!-- sensor frequency -->
+            <gyroscope_noise_density>${gyroscope_noise_density}</gyroscope_noise_density> <!-- Gyroscope noise density (two-sided spectrum) [rad/s/sqrt(Hz)] -->
+            <gyroscope_random_walk>${gyroscope_random_walk}</gyroscope_random_walk> <!-- Gyroscope bias random walk [rad/s/s/sqrt(Hz)] -->
+            <gyroscope_bias_correlation_time>${gyroscope_bias_correlation_time}</gyroscope_bias_correlation_time> <!-- Gyroscope bias correlation time constant [s] -->
+            <gyroscope_turn_on_bias_sigma>${gyroscope_turn_on_bias_sigma}</gyroscope_turn_on_bias_sigma> <!-- Gyroscope turn on bias standard deviation [rad/s] -->
+            <accelerometer_noise_density>${accelerometer_noise_density}</accelerometer_noise_density> <!-- Accelerometer noise density (two-sided spectrum) [m/s^2/sqrt(Hz)] -->
+            <accelerometer_random_walk>${accelerometer_random_walk}</accelerometer_random_walk> <!-- Accelerometer bias random walk. [m/s^2/s/sqrt(Hz)] -->
+            <accelerometer_bias_correlation_time>${accelerometer_bias_correlation_time}</accelerometer_bias_correlation_time> <!-- Accelerometer bias correlation time constant [s] -->
+            <accelerometer_turn_on_bias_sigma>${accelerometer_turn_on_bias_sigma}</accelerometer_turn_on_bias_sigma> <!-- Accelerometer turn on bias standard deviation [m/s^2] -->
+        </plugin>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

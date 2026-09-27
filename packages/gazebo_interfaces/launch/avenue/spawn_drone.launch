@@ -1,0 +1,60 @@
+<launch>
+    <arg name="use_predefined_traj" default="false" />
+    <arg name="drone_name" default="intelaero_bugwright" />
+    <arg name="id" default="0" />
+    <arg name="pilot_type" default="px4" />
+    <arg name="lidar_min_range" default="0.1" />
+    <arg name="lidar_max_range" default="20.0" />
+    <arg name="vertical_min_angle" default="-0.26" />
+    <arg name="vertical_max_angle" default="0.87" />
+    <arg name="gaussian_noise" default="0.008" />
+    <arg name="range_noise_slope" default="0.00127" />
+
+    <arg name="x"     value="$(eval 2 * arg('id') + 1)" />
+    <arg name="y"     value="1.0" />
+    <!-- Ofsetting z of the height of the drone -->
+    <arg name="z"     value="2.5" />
+    
+    <group ns="$(arg drone_name)_$(arg id)">
+        <!-- Launching the model spawn in simulation -->
+        <include file="$(find chroma_gazebo_models)/launch/spawn_$(arg drone_name).launch">
+            <arg name="name"  value="$(arg drone_name)" />
+            <arg name="id"    value="$(arg id)" />
+            <arg name="x"     value="$(arg x)" />
+            <arg name="y"     value="$(arg y)" />
+            <arg name="z"     value="$(arg z)" />
+            <arg name="roll"  value="0.0" />
+            <arg name="pitch" value="0.0" />
+            <arg name="yaw"   value="0.0" />
+            <arg name="lidar_min_range"  value="$(arg lidar_min_range)" />
+            <arg name="lidar_max_range"  value="$(arg lidar_max_range)" />
+            <arg name="vertical_min_angle"  value="$(arg vertical_min_angle)" />
+            <arg name="vertical_max_angle"  value="$(arg vertical_max_angle)" />
+            <arg name="gaussian_noise"  value="$(arg gaussian_noise)" />
+            <arg name="range_noise_slope"  value="$(arg range_noise_slope)" />
+        </include>
+
+        <node name="collision_checker" pkg="chroma_gazebo_interfaces" type="collision_checker.py"  output="screen" args="" >
+            <param name="odometry_topic"                        value="groundtruth/odom"/>
+            <param name="pointcloud_topic"                      value="velodyn/velodyn_scan"/>
+            <param name="emergency_stop_client_topic"           value="/$(arg drone_name)_$(arg id)/mav_local_planner/stop"/>
+        </node>
+
+        <!-- Launching the drone pilot -->
+        <include file="$(find chroma_gazebo_interfaces)/launch/pilot/$(arg pilot_type)_pilot.launch">
+            <arg name="drone_name"  value="$(arg drone_name)" />
+            <arg name="id"    value="$(arg id)" />
+            <arg name="x"     value="$(arg x)" />
+            <arg name="y"     value="$(arg y)" />
+            <arg name="z"     value="$(arg z)" />
+        </include>
+
+        <!-- Conditionally launch the target publisher if the user want to use a predefined traj for testing purposes -->
+        <group if="$(arg use_predefined_traj)">
+        <node name="target_publisher" pkg="chroma_gazebo_interfaces" type="target_publisher.py">
+            <param name="~world_name"           value="$(arg world)"/>
+            <remap from="topic_target"   to="new_target"/>
+        </node>
+        </group>
+    </group>
+</launch>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<launch>
+    <!-- Generic parameters -->
+    <env name="GAZEBO_MODEL_PATH" value="$(find chroma_gazebo_worlds)/models:${GAZEBO_MODEL_PATH}"/>
+    <arg name="world"      default= "empty_world" />
+    
+    <!-- Spawn as many drones as number_of_drones (ugly way to have a for loop in a roslaunch)-->
+    <node pkg="chroma_gazebo_interfaces" type="spawn_drones.sh" name="drones_spawner" output="screen" args="" />
+
+    <!-- Launching data fusion -->
+    <node name="pointcloud_relay" pkg="chroma_gazebo_interfaces" type="pointcloud_relay.py" output="screen" args="" >
+        <!-- <param name="droneName"                command="rosparam get /drone_name"/> -->
+        <param name="topicName"                value="velodyn/velodyn_scan"/>
+        <param name="numberOfTopics"   type="int"     command="rosparam get /number_of_drones"/>
+    </node>
+
+      <!-- Launching freespace pointcloud computation -->
+    <node name="complementary_pointcloud_computer" pkg="chroma_gazebo_interfaces" type="complementary_pointcloud_computer.py">
+        <remap from="pointcloud_in" to="/all_pointclouds"/>
+        <remap from="pointcloud_out" to="/freespace_pointcloud"/>
+        <param name="using_cupy" value="$(env USING_GPU)" />
+    </node>
+
+    <!-- Launching the vizualisation -->
+    <include file="$(find chroma_gazebo_interfaces)/launch/avenue/vizualisation.launch">
+      <arg name="world" value="$(arg world)"/>
+    </include>
+</launch>

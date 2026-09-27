@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<robot name="crawler" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="side_wheel_torque"            value="20.0"/> <!-- [Nm] -->
+  <xacro:property name="side_wheel_acceleration"      value="5.0"/> <!-- [Nm] -->
+
+  <!-- Controller -->
+  <gazebo>
+    <plugin
+        filename="libgazebo_ros_diff_drive.so"
+        name="${namespace}_differential_drive_controller" >
+        <alwaysOn>true</alwaysOn>
+        <robotNamespace>${namespace}</robotNamespace>
+        <updateRate>20</updateRate>
+        <leftJoint>${namespace}_wheel_left_joint</leftJoint>
+        <rightJoint>${namespace}_wheel_right_joint</rightJoint>
+        <wheelSeparation>${side_wheels_separation}</wheelSeparation>
+        <wheelDiameter>${side_wheel_radius*2}</wheelDiameter>
+        <wheelTorque>${side_wheel_torque}</wheelTorque>
+        <wheelAcceleration>${side_wheel_acceleration}</wheelAcceleration>
+        <commandTopic>/${namespace}/cmd_vel</commandTopic>
+        <odometryTopic>/${namespace}/odom</odometryTopic>
+        <odometryFrame>/${namespace}/odom</odometryFrame>
+        <robotBaseFrame>/world</robotBaseFrame>
+        <publishOdomTf>true</publishOdomTf>
+        <publishWheelTf>false</publishWheelTf>
+        <publishWheelJointState>true</publishWheelJointState>
+        <legacyMode>false</legacyMode>
+    </plugin>
+  </gazebo>
+
+</robot>

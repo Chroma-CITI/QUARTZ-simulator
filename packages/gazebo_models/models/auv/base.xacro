@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Property Blocks BODY-->
+  <xacro:property name="body_inertia">
+    <inertia
+      ixx="${1/12 * body_mass * (body_ly*body_ly + body_lz*body_lz)}"
+      iyy="${1/12 * body_mass * (body_lx*body_lx + body_lz*body_lz)}"
+      izz="${1/12 * body_mass * (body_lx*body_lx + body_ly*body_ly)}"
+      ixy="0.0" ixz="0.0"  iyz="0.0" />
+  </xacro:property>
+
+  <!-- Included URDF Files -->
+  <xacro:include filename="$(find chroma_gazebo_models)/macros/parts/body_auv_macro.xacro"/>
+
+  <!-- Instantiate body_auv_macro once -->
+  <xacro:body_auv_macro
+    robot_namespace="${namespace}"
+    mass="${body_mass}"
+    length="${body_lx}"
+    width="${body_ly}"
+    height="${body_lz}"
+    mesh_file_visual="${body_mesh_visual}"
+    mesh_file_collision="${body_mesh_collision}" >
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <xacro:insert_block name="body_inertia" />
+  </xacro:body_auv_macro>
+
+</robot>

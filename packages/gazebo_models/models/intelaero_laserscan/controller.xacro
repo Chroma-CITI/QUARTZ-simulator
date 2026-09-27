@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Controller -->
+    <gazebo>
+      <plugin name="${namespace}_attitude_controller_plugin" filename="libgazebo_plugin__quadcopter_attitude_controller.so">
+        <robot_namespace>${namespace}</robot_namespace>
+        <link_name>${namespace}/base_link</link_name>
+        <topic_rotorspeed>command/rotorspeed</topic_rotorspeed>
+        <topic_cmd>cmd</topic_cmd>
+        <topic_imu>imu</topic_imu>
+        <id_front_left_rotor>2</id_front_left_rotor>
+        <id_front_right_rotor>0</id_front_right_rotor>
+        <id_rear_right_rotor>3</id_rear_right_rotor>
+        <id_rear_left_rotor>1</id_rear_left_rotor>
+        <dir_front_left_rotor>-1</dir_front_left_rotor>
+        <dir_front_right_rotor>1</dir_front_right_rotor>
+        <dir_rear_right_rotor>-1</dir_rear_right_rotor>
+        <dir_rear_left_rotor>1</dir_rear_left_rotor>
+        <rotorspeed_max>68.0</rotorspeed_max>
+        <kp_yaw_rate>350.0</kp_yaw_rate>
+        <kp_rol_rate>1300.0</kp_rol_rate>
+        <kp_pit_rate>1300.0</kp_pit_rate>
+        <kp_thrust>482.5</kp_thrust>
+        <freq>100.0</freq>
+      </plugin>
+    </gazebo>
+
+</robot>

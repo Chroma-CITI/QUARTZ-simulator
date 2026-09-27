@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Rotor joint and link -->
+  <xacro:macro name="battery_macro"
+    params="
+    robot_namespace
+    parent_link
+    mass
+    lx
+    ly
+    lz
+    *origin
+    *inertia">
+
+    <link name="${robot_namespace}/battery_link">
+        <inertial>
+            <xacro:insert_block name="origin" />
+            <mass value="${mass}" />
+            <xacro:insert_block name="inertia" />
+        </inertial>
+
+        <visual name="${robot_namespace}_battery_visual">
+            <xacro:insert_block name="origin" />
+            <geometry>
+                <box size="${lx} ${ly} ${lz}" />
+            </geometry>
+        </visual>
+
+        <collision name="${robot_namespace}_battery_collision">
+            <xacro:insert_block name="origin" />
+            <geometry>
+                <box size="${lx} ${ly} ${lz}" />
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="${robot_namespace}_battery_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${robot_namespace}/battery_link" />
+    </joint>
+
+  </xacro:macro>
+
+</robot>

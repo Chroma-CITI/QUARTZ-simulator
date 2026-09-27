@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>chroma_gazebo_models</name>
+  <version>0.0.0</version>
+  <description>The chroma_gazebo_models package</description>
+
+  <maintainer email="vincent.le-doze@inria.fr">vledoze</maintainer>
+  <license>ASL 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to run this package. -->
+  <exec_depend>xacro</exec_depend>
+  <depend>gazebo_ros</depend>
+
+</package>

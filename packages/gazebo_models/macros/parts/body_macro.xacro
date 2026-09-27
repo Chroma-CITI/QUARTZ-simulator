@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Main multirotor link -->
+  <xacro:macro name="body_macro"
+    params="
+    robot_namespace
+    mass
+    length
+    width
+    height
+    mesh_file
+    *origin
+    *inertia">
+
+    <!-- Body frame -->
+    <link name="${robot_namespace}/base_link">
+      <inertial>
+        <xacro:insert_block name="origin" />
+        <mass value="${mass}" />  <!-- [kg] -->
+        <xacro:insert_block name="inertia" />
+      </inertial>
+
+      <visual name="${robot_namespace}_body_visual">
+        <xacro:insert_block name="origin" />
+        <geometry>
+          <xacro:if value="${mesh_file == ' '}">
+            <box size="${length} ${width} ${height}" /> <!-- [m] [m] [m] -->
+          </xacro:if>
+          <xacro:unless value="${mesh_file == ' '}">
+            <mesh filename="${mesh_file}" />
+          </xacro:unless>
+        </geometry>
+      </visual>
+
+      <collision name="${robot_namespace}_body_collision">
+        <xacro:insert_block name="origin" />
+        <geometry>
+          <box size="${length} ${width} ${height}" /> <!-- [m] [m] [m] -->
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo>
+      <plugin
+          filename="libgazebo_plugin__body.so"
+          name="${robot_namespace}_body_plugin">
+        <robot_namespace>${robot_namespace}</robot_namespace>
+        <link_name>${robot_namespace}/base_link</link_name>
+        <odom_freq>20.0</odom_freq>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

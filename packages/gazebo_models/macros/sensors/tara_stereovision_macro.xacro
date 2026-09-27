@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Includes  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/imu_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/camera_macro.xacro" />
+
+    <!-- Properties -->
+    <xacro:property name="tara_mass" value="0.0805" /> <!-- [kg] -->
+    <xacro:property name="tara_lx" value="0.035" /> <!-- [m] -->
+    <xacro:property name="tara_ly" value="0.100" /> <!-- [m] -->
+    <xacro:property name="tara_lz" value="0.030" /> <!-- [m] -->
+
+    <!-- Macro to add a camera. -->
+    <xacro:macro name="tara_stereovision_macro"
+        params="
+            robot_namespace
+            parent_link
+            name
+            *origin">
+
+        <link name="${robot_namespace}/${name}_link">
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="${tara_mass}" />
+                  <inertia
+                    ixx="${1/12 * tara_mass * (tara_ly*tara_ly + tara_lz*tara_lz)}"
+                    iyy="${1/12 * tara_mass * (tara_lx*tara_lx + tara_lz*tara_lz)}"
+                    izz="${1/12 * tara_mass * (tara_lx*tara_lx + tara_ly*tara_ly)}"
+                    ixy="0.0" ixz="0.0"  iyz="0.0" />
+            </inertial>
+
+            <visual name="${robot_namespace}_${name}_visual">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="${tara_lx} ${tara_ly} ${tara_lz}" />
+                 </geometry>
+            </visual>
+
+            <collision name="${robot_namespace}_${name}_collision">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="${tara_lx} ${tara_ly} ${tara_lz}" />
+                 </geometry>
+            </collision>
+        </link>
+
+        <joint name="${robot_namespace}_${name}_joint" type="fixed">
+            <xacro:insert_block name="origin" />
+            <parent link="${parent_link}" />
+            <child link="${robot_namespace}/${name}_link" />
+        </joint>
+
+        <xacro:imu_macro
+            robot_namespace="${namespace}"
+            parent_link="${namespace}_${name}_link"
+            name="${name}/imu"
+            topic="${name}/imu"
+            mass="0.015"
+            freq="53.79"
+            gyroscope_noise_density="1.004365e-02"
+            gyroscope_random_walk="0.000764"
+            gyroscope_bias_correlation_time="1.0"
+            gyroscope_turn_on_bias_sigma="0.0"
+            accelerometer_noise_density="2.706304e-02"
+            accelerometer_random_walk="0.001935"
+            accelerometer_bias_correlation_time="1.0"
+            accelerometer_turn_on_bias_sigma="0.0">
+            <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+            <!-- <origin xyz="0 0.03 0" rpy="3.14 -1.57 0.0" /> -->
+            <origin xyz="0 0.03 0" rpy="3.046917461286287 -1.4944389514745666 1.7893481542488037" />
+            <!-- 3.046917461286287, -1.4944389514745666, 1.7893481542488037 orientation flu to imu-->
+            <!-- 1.64739318282 0.123242872086 0.0166666059113 orientation imu to cam -->
+        </xacro:imu_macro>
+
+        <xacro:camera_macro
+            robot_namespace="${namespace}"
+            parent_link="${robot_namespace}/${name}_link"
+            name="${name}/left"
+            mesh="camera_cmos.dae"
+            frame_rate="30"
+            horizontal_fov="0.8008715852628413"
+            image_width="640"
+            image_height="480"
+            image_format="L8"
+            min_distance="0.02"
+            max_distance="300"
+            noise_mean="0.0"
+            noise_stddev="0.007"
+            center_x="338.003060006102"
+            center_y="215.4202874679422"
+            hackBaseline="0.0"
+            distortionK1="0.29196218355404036"
+            distortionK2="0.5219607697897097"
+            distortionK3="0.0"
+            distortionT1="-1.3257387000549523"
+            distortionT2="3.107037677115091">
+            <box size="0.01 0.02 0.02" />
+            <origin xyz="${tara_lx/2.0 - 0.005} 0.03 0" rpy="0 0 0" />
+        </xacro:camera_macro>
+
+        <xacro:camera_macro
+            robot_namespace="${namespace}"
+            parent_link="${robot_namespace}/${name}_link"
+            name="${name}/right"
+            mesh="camera_cmos.dae"
+            frame_rate="30"
+            horizontal_fov="0.8009939929434828"
+            image_width="640"
+            image_height="480"
+            image_format="L8"
+            min_distance="0.02"
+            max_distance="300"
+            noise_mean="0.0"
+            noise_stddev="0.007"
+            center_x="338.8078057689832"
+            center_y="219.7562603019754"
+            hackBaseline="0.0"
+            distortionK1="0.29353667433290137"
+            distortionK2="0.510765024482108"
+            distortionK3="0.0"
+            distortionT1="-1.2331440351130913"
+            distortionT2="2.715395367204584">
+            <box size="0.01 0.02 0.02" />
+            <origin xyz="${tara_lx/2.0 - 0.005} -0.03 0" rpy="0 0 0" />
+        </xacro:camera_macro>
+
+    </xacro:macro>
+</robot>

@@ -1,0 +1,19 @@
+<launch>
+    <arg name="drone_name" default="intelaero_bugwright" />
+    <arg name="id" default="0" />
+    <arg name="x"     default="$(eval 4 * arg('id'))" />
+    <arg name="y"     default="0.0" />
+      <!-- Ofsetting z of the height of the drone -->
+    <arg name="z"     default="2.0" />
+    
+    <!-- Launching the drone pilot -->
+    <node pkg="chroma_gazebo_interfaces" type="simulation_pilot.py" name="pilot" output="screen">
+        <!-- parameters -->
+        <param name="~freq"           value="100.0"/>
+        <param name="~model_id" value="$(arg drone_name)_$(arg id)"/>
+        <param name="~target_px"      value="$(arg x)"/>
+        <param name="~target_py"      value="$(arg y)"/>
+        <param name="~target_pz"      value="$(arg z)"/>
+    </node>
+
+</launch>

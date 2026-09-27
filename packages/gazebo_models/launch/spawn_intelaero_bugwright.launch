@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- Arguments -->
+  <arg name="lidar_min_range"  default="0.01"/>
+  <arg name="lidar_max_range"  default="10.0"/>
+  <arg name="vertical_min_angle" default="-0.2521" />
+  <arg name="vertical_max_angle" default="0.9075" />
+  <arg name="gaussian_noise" default="0.08" />
+  <arg name="range_noise_slope" default="0.08" />
+  <arg name="name"  default="intelaero_bugwright"/>
+  <arg name="id"    default="0"/>
+  <arg name="namespace"  default="$(arg name)_$(arg id)"/>
+  <arg name="x"     default="0.0"/>
+  <arg name="y"     default="0.0"/>
+  <arg name="z"     default="0.0"/>
+  <arg name="roll"  default="0" />
+  <arg name="pitch" default="0" />
+  <arg name="yaw"   default="0.5" />
+
+  <arg name="model"         default="$(find chroma_gazebo_models)/models/intelaero_bugwright/model.xacro"/>
+  <arg name="tf_prefix"     default="$(optenv ROS_NAMESPACE)"/>
+  <arg name="fcu_port"      default="$(eval 14560 + 100*arg('id'))"/>
+  <arg name="qgc_port"      default="$(eval 14550 + 100*arg('id'))"/>
+  <arg name="min_sensor_range"  default="$(arg lidar_min_range)"/>
+  <arg name="sensor_range"  default="$(arg lidar_max_range)"/>
+
+  <!-- send the robot XML to param server -->
+  <param name="robot_description_$(arg name)" command="
+    $(find xacro)/xacro '$(arg model)'
+    namespace:=$(arg namespace)
+    fcu_port:=$(arg fcu_port)
+    qgc_port:=$(arg qgc_port)
+    min_sensor_range:=$(arg min_sensor_range)
+    sensor_range:=$(arg sensor_range)
+    vertical_min_angle:=$(arg vertical_min_angle)
+    vertical_max_angle:=$(arg vertical_max_angle)"/>
+
+  <param name="tf_prefix_$(arg name)" type="string" value="$(arg tf_prefix)" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_$(arg name)" pkg="gazebo_ros" type="spawn_model"
+   args="-param robot_description_$(arg name)
+         -urdf
+         -x $(arg x)
+         -y $(arg y)
+         -z $(arg z)
+         -R $(arg roll)
+         -P $(arg pitch)
+         -Y $(arg yaw)
+         -model $(arg namespace)"
+   respawn="false" output="screen">
+  </node>
+
+  <!-- Publishing the model's missing tf (FIXME: should be done by the localization and odometry packages) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_world_publisher" args="0 0 0 0 0 0 1 world $(arg namespace)/map" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="odom_to_map_publisher" args="0 0 0 0 0 0 1 $(arg namespace)/map $(arg namespace)/odom" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_odom_publisher" args="0 0 0 0 0 0 1 $(arg namespace)/odom $(arg namespace)/base_link" />
+  
+  <!-- Used by joint_state_publisher and robot_state_publisher -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find chroma_gazebo_models)/models/$(arg name)/model.xacro namespace:=$(arg namespace) namespace_deploy:=$(arg namespace)"/>
+
+  <!--Send fake joint values-->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  
+  <!--Publish robot state to TF-->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  <!-- Add a controller -->
+  <!--include file="$(find chroma_gazebo_interfaces)/launch/drone_pilot.launch">
+    <arg name="drone_name" value="$(arg name)"/>
+    <arg name="target_px"  value="$(eval -arg('y'))"/>
+    <arg name="target_py"  value="$(eval  arg('x'))"/>
+    <arg name="target_pz"  value="$(eval  arg('z') + 2.0)"/>
+  </include-->
+
+
+</launch>

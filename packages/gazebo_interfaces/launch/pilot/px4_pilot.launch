@@ -1,0 +1,29 @@
+<launch>
+    <arg name="drone_name" default="intelaero_bugwright" />
+    <arg name="id" default="0" />
+    <arg name="x"     default="$(eval 4 * arg('id'))" />
+    <arg name="y"     default="0.0" />
+      <!-- Ofsetting z of the height of the drone -->
+    <arg name="z"     default="2.0" />
+    
+    <!-- MAVROS -->
+    <arg name="fcu_url" default="$(eval 'udp://:' + str(int(arg('id')) + 14540) + '@localhost:' + str(int(arg('id')) + 14550))"/>
+    <include file="$(find chroma_gazebo_interfaces)/launch/pilot/mavros.launch">
+        <arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
+        <arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
+        <arg name="namespace" value="$(arg drone_name)_$(arg id)/"/>
+        <arg name="fcu_url" value="$(arg fcu_url)"/>
+        <arg name="gcs_url" value=""/>
+        <arg name="tgt_system" value="$(eval 1 + arg('id'))"/>
+        <arg name="tgt_component" value="1"/>
+    </include>
+
+    <!-- Offboard control -->
+    <node pkg="chroma_gazebo_interfaces" type="offboard_node_traj.py" name="offboard_node" respawn="true" output="screen" >
+        <param name="~localFrame" value="$(arg drone_name)_$(arg id)/map"/>
+    </node>
+
+    <!-- <node pkg="chroma_gazebo_interfaces" type="complementary_pointcloud_computer.py" name="complementary_pointcloud_computer" required="true" output="screen" >
+        <remap from="pointcloud_in"   to="/all_pointclouds"/>
+    </node> -->
+</launch>

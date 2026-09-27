@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Posix SITL environment launch script -->
+    <!-- launchs PX4 SITL and spawns vehicle -->
+    <!-- vehicle pose -->
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0"/>
+    <arg name="roll" default="0.0"/>
+    <arg name="pitch" default="0.0"/>
+    <arg name="yaw" default="0"/>
+    <!-- vehcile model and config -->
+    <arg name="name" default="plane"/>
+    <arg name="id" default="0"/>
+    <env name="PX4_SIM_MODEL" value="gazebo-classic_$(arg name)" />
+    <arg name="mavlink_udp_port" default="$(eval 14560 + arg('id'))"/>
+    <arg name="mavlink_tcp_port" default="$(eval 4560 + arg('id'))"/>
+    <!-- PX4 configs -->
+    <arg name="interactive" default="true"/>
+    <!-- generate sdf vehicle model (TODO: cleanup long command) -->
+    <arg name="lidar_min_range" default="0.1" />
+    <arg name="lidar_max_range" default="20.0" />
+    <arg name="vertical_min_angle" default="-0.2521" />
+    <arg name="vertical_max_angle" default="0.9075" />
+    <arg name="gaussian_noise" default="0.08" />
+    <arg name="range_noise_slope" default="0.08" />
+    <arg name="cmd" default="xmlstarlet ed -d&#xA;
+                             '//plugin[@name=&quot;mavlink_interface&quot;]/mavlink_tcp_port' -s '//plugin[@name=&quot;mavlink_interface&quot;]' -t elem -n mavlink_tcp_port -v $(arg mavlink_tcp_port)&#xA;
+                             -u &quot;//plugin[@name=&apos;body_uav_plugin&apos;]/robot_namespace&quot; -v $(arg name)_$(arg id)&#xA;
+                             -u &quot;//sensor[@name=&apos;velodyne&apos;]/ray/range/min&quot; -v $(arg lidar_min_range)&#xA;
+                             -u &quot;//sensor[@name=&apos;velodyne&apos;]/ray/range/max&quot; -v $(arg lidar_max_range)&#xA;
+                             -u &quot;//sensor[@name=&apos;velodyne&apos;]/ray/scan/vertical/min_angle&quot; -v $(arg vertical_min_angle)&#xA;
+                             -u &quot;//sensor[@name=&apos;velodyne&apos;]/ray/scan/vertical/max_angle&quot; -v $(arg vertical_max_angle)&#xA;
+                             -u &quot;//plugin[@name=&apos;laserscan_plugin&apos;]/gaussian_noise&quot; -v $(arg gaussian_noise)&#xA;
+                             -s '//plugin[@name=&quot;laserscan_plugin&quot;]' -t elem -n range_noise_slope -v $(arg range_noise_slope)&#xA;
+                             -u &quot;//link[@name='base_link']/@name&quot; -v $(arg name)_$(arg id)/base_link&#xA;
+                             -u &quot;//text()[contains(., 'base_link')]&quot; -v $(arg name)_$(arg id)/base_link&#xA;
+                             -u &quot;//link[@name='velodyne_link']/@name&quot; -v $(arg name)_$(arg id)/velodyne_link&#xA;
+                             -u &quot;//text()[contains(., 'velodyne_link')]&quot; -v &quot;$(arg name)_$(arg id)/velodyne_link&quot;&#xA;
+                             -u &quot;//text()[contains(., 'velodyne_points')]&quot; -v &quot;/$(arg name)_$(arg id)/velodyn/velodyn_scan&quot;&#xA;
+                             $(find px4)/Tools/simulation/gazebo-classic/sitl_gazebo-classic/models/$(arg name)/$(arg name).sdf"/>
+    <param command="$(arg cmd)" name="robot_model"/>
+    <!-- PX4 SITL -->
+    <arg unless="$(arg interactive)" name="px4_command_arg1" value=""/>
+    <arg     if="$(arg interactive)" name="px4_command_arg1" value="-d PX4_GZ_MODEL_POSE $(arg x) $(arg y) $(arg z) $(arg roll) $(arg pitch) $(arg yaw)"/>
+    <node name="sitl_$(arg id)" pkg="px4" type="px4" output="screen" args="$(find px4)/build/px4_sitl_default/etc -s etc/init.d-posix/rcS -i $(arg id) -w sitl_$(arg name)_$(arg id) $(arg px4_command_arg1)">
+    </node>
+    <!-- spawn vehicle -->
+    <node name="$(arg name)_$(arg id)_spawn" output="screen" pkg="gazebo_ros" type="spawn_model" args="-sdf -param robot_model -model $(arg name)_$(arg id) -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
+    <!-- In case of multi robot, the initial pose of the robot has to be used to offest the robot map's frame with respect to the world frame in order to have the same pose in gazebo and rviz -->
+    <!-- FIXME: if roll, pitch, yaw are given the world to map transform should include it so a euler to quaternion should be used here -->
+    <!-- IMPORTANT: It is needed to have a 90 deg rotation around the z axis because of misalignment between ros and px4 world frames. cf (https://discuss.px4.io/t/gazebo-simulation-odometry-initialization/36032) -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_map_publisher" args="$(arg x) $(arg y) $(arg z) 0 0 0.7071 0.7071 world $(arg name)_$(arg id)/map" />
+    <!-- FIXME: No joint publisher for .sdf file so have to publish the tf manually -->
+    <!-- TODO: Should be more generic, either by calling the frame sensor_link or by publishing it somewhere else... -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="velodyne_to_base_publisher" args="0 0 0.1 0 0 0 1 $(arg name)_$(arg id)/base_link $(arg name)_$(arg id)/velodyne_link" />
+
+</launch>

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<robot name="intelaero" xmlns:xacro="http://ros.org/wiki/xacro">
+
+<gazebo>
+    <plugin name='mavlink_interface' filename='libgazebo_plugin__mavlink_interface.so'>
+      <robot_namespace>${namespace}</robot_namespace>
+      <topic_imu>imu</topic_imu>
+      <topic_gps>gps</topic_gps>
+      <topic_mag>magnetometer</topic_mag>
+      <topic_baro>barometer</topic_baro>
+      <topic_rotorspeed_cmd>command/rotorspeed</topic_rotorspeed_cmd>
+      <use_groundtruth>true</use_groundtruth>
+      <fcu_addr>INADDR_ANY</fcu_addr>
+      <fcu_port>${fcu_port}</fcu_port>
+      <serial_enabled>false</serial_enabled>
+      <serial_device>/dev/ttyS4</serial_device>
+      <baudrate>115200</baudrate>
+      <!-- <baudrate>921600</baudrate> -->
+      <qgc_addr>INADDR_ANY</qgc_addr>
+      <qgc_port>${qgc_port}</qgc_port>
+      <control_channels>
+        <channel name="front_left_rotor">
+          <id>0</id>
+          <cmd_offset>0</cmd_offset>
+          <cmd_scaling>${rotor_rotorspeed_max}</cmd_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>${rotor_rotorspeed_max / 10.0}</zero_position_armed>
+          <cmd_type>rotor_speed</cmd_type>
+        </channel>
+        <channel name="front_right_rotor">
+          <id>1</id>
+          <cmd_offset>0</cmd_offset>
+          <cmd_scaling>${rotor_rotorspeed_max}</cmd_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>${rotor_rotorspeed_max / 10.0}</zero_position_armed>
+          <cmd_type>rotor_speed</cmd_type>
+        </channel>
+        <channel name="rear_right_rotor">
+          <id>2</id>
+          <cmd_offset>0</cmd_offset>
+          <cmd_scaling>${rotor_rotorspeed_max}</cmd_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>${rotor_rotorspeed_max / 10.0}</zero_position_armed>
+          <cmd_type>rotor_speed</cmd_type>
+        </channel>
+        <channel name="rear_left_rotor">
+          <id>3</id>
+          <cmd_offset>0</cmd_offset>
+          <cmd_scaling>${rotor_rotorspeed_max}</cmd_scaling>
+          <zero_position_disarmed>0</zero_position_disarmed>
+          <zero_position_armed>${rotor_rotorspeed_max / 10.0}</zero_position_armed>
+          <cmd_type>rotor_speed</cmd_type>
+        </channel>
+      </control_channels>
+    </plugin>
+  </gazebo>
+
+</robot>

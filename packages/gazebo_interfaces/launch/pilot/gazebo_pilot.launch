@@ -1,0 +1,29 @@
+<launch>
+    <arg name="drone_name" default="intelaero_bugwright" />
+    <arg name="id" default="0" />
+    <arg name="x"     default="$(eval 4 * arg('id'))" />
+    <arg name="y"     default="0.0" />
+      <!-- Ofsetting z of the height of the drone -->
+    <arg name="z"     default="2.0" />
+    
+    <!-- Launching the drone pilot -->
+    <node pkg="chroma_gazebo_interfaces" type="drone_pilot.py" name="pilot" output="screen">
+        <!-- parameters -->
+        <param name="~freq"           value="100.0"/>
+        <param name="~borne_acc_xy"   value="0.4" />
+        <param name="~borne_acc_z"   value="0.4" />
+        <param name="~target_px"      value="$(arg x)"/>
+        <param name="~target_py"      value="$(arg y)"/>
+        <param name="~target_pz"      value="$(arg z)"/>
+        <!-- input topics -->
+        <remap from="topic_odometry" to="groundtruth/odom"/>
+        <remap from="topic_target"   to="new_target"/>
+        <!-- output topics -->
+        <remap from="~cmd" to="cmd"/>
+    </node>
+
+    <node name="goal_pose_handler" pkg="chroma_gazebo_interfaces" type="goal_pose_handler.py" output="screen" clear_params="true">
+      <remap from="next_waypoint" to="new_target" />
+      <remap from="~reset_targets" to="pilot/reset_targets" />
+    </node>
+</launch>

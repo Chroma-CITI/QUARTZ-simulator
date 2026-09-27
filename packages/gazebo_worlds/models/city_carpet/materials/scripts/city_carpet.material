@@ -1,0 +1,14 @@
+material city_carpet/Image
+{
+      receive_shadows on
+      technique
+      {
+            pass
+            {
+                  texture_unit
+                  {
+                    texture landing_pad.jpg
+                  }
+            }
+    }
+}

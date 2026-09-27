@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2015 Fadri Furrer, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Janosch Nikolic, ASL, ETH Zurich, Switzerland
+  Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Included URDF Files -->
+  <xacro:include filename="$(find chroma_gazebo_models)/macros/parts/body_uav_macro.xacro" />
+  <xacro:include filename="$(find chroma_gazebo_models)/macros/parts/motor_macro.xacro" />
+
+  <!-- Property Blocks BODY-->
+  <xacro:property name="body_mass" value="1.5" /> <!-- [kg] -->
+  <xacro:property name="body_lx" value="0.47" /> <!-- [m] -->
+  <xacro:property name="body_ly" value="0.47" /> <!-- [m] -->
+  <xacro:property name="body_lz" value="0.110" /> <!-- [m] -->
+  <xacro:property name="body_mesh"   value="px4_base.dae" />
+  <xacro:property name="body_inertia">  <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+    <inertia
+      ixx="0.029125"
+      iyy="0.029125"
+      izz="0.055225"
+      ixy="0.0" ixz="0.0"  iyz="0.0" />
+  </xacro:property>
+
+  <!-- Property Blocks MOTOR-->
+  <xacro:property name="rotor_mass" value="0.005" /> <!-- [kg] -->
+  <xacro:property name="rotor_px" value="0.0935" /> <!-- [m] -->
+  <xacro:property name="rotor_py" value="0.107" /> <!-- [m] -->
+  <xacro:property name="rotor_pz" value="0.091" /> <!-- [m] -->
+  <xacro:property name="rotor_radius" value="0.128" /> <!-- [m] -->
+  <xacro:property name="rotor_height" value="0.005" /> <!-- [m] -->
+  <xacro:property name="rotor_rotorspeed_max" value="1100" /> <!-- [rad/s] -->
+  <xacro:property name="rotor_velocity_slowdown_sim" value="20" />
+  <xacro:property name="rotor_motor_constant" value="8.54858e-06" /> <!-- [kg.m/s^2] -->
+  <xacro:property name="rotor_moment_constant" value="0.06" /> <!-- [m] -->
+  <xacro:property name="rotor_drag_coefficient" value="0.000806428" />
+  <xacro:property name="rotor_moment_coefficient" value="1e-06" />
+  <xacro:property name="rotor_filter_time_constant_up" value="0.0125" /> <!-- [s] -->
+  <xacro:property name="rotor_filter_time_constant_down" value="0.025" /> <!-- [s] -->
+  <xacro:property name="rotor_inertia">  <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+    <inertia
+      ixx="9.75e-07"
+      iyy="0.000273104"
+      izz="0.000274004"
+      ixy="0.0" ixz="0.0"  iyz="0.0" />
+  </xacro:property>
+
+  <!-- Instantiate body_uav_macro once -->
+  <xacro:body_uav_macro
+    robot_namespace="${namespace}"
+    odom_freq="100.0"
+    mass="${body_mass}"
+    length="${body_lx}"
+    width="${body_ly}"
+    height="${body_lz}"
+    mesh_file="${body_mesh}">
+    <origin xyz="0.0 0.0 0.061" rpy="0.0 0.0 0.0" />
+    <xacro:insert_block name="body_inertia" />
+  </xacro:body_uav_macro>
+
+  <!-- Front right rotor -->
+  <xacro:rotor_macro
+    robot_namespace="${namespace}"
+    parent_link="${namespace}/base_link"
+    id="0"
+    direction="ccw"
+    mass="${rotor_mass}"
+    radius="${rotor_radius}"
+    height="${rotor_height}"
+    velocity_slowdown_sim="${rotor_velocity_slowdown_sim}"
+    filter_time_constant_up="${rotor_filter_time_constant_up}"
+    filter_time_constant_down="${rotor_filter_time_constant_down}"
+    rotorspeed_max="${rotor_rotorspeed_max}"
+    motor_constant="${rotor_motor_constant}"
+    moment_constant="${rotor_moment_constant}"
+    drag_coefficient="${rotor_drag_coefficient}"
+    moment_coefficient="${rotor_moment_coefficient}"
+    mesh_file ="px4_ccw.dae">
+    <origin xyz="${rotor_px} -${rotor_py} ${rotor_pz}" rpy="0.0 0.0 0.0" />
+    <xacro:insert_block name="rotor_inertia" />
+  </xacro:rotor_macro>
+
+  <!-- Back left rotor -->
+  <xacro:rotor_macro
+    robot_namespace="${namespace}"
+    parent_link="${namespace}/base_link"
+    id="1"
+    direction="ccw"
+    mass="${rotor_mass}"
+    radius="${rotor_radius}"
+    height="${rotor_height}"
+    velocity_slowdown_sim="${rotor_velocity_slowdown_sim}"
+    filter_time_constant_up="${rotor_filter_time_constant_up}"
+    filter_time_constant_down="${rotor_filter_time_constant_down}"
+    rotorspeed_max="${rotor_rotorspeed_max}"
+    motor_constant="${rotor_motor_constant}"
+    moment_constant="${rotor_moment_constant}"
+    drag_coefficient="${rotor_drag_coefficient}"
+    moment_coefficient="${rotor_moment_coefficient}"
+    mesh_file ="px4_ccw.dae">
+    <origin xyz="-${rotor_px} ${rotor_py} ${rotor_pz}" rpy="0 0 0" />
+    <xacro:insert_block name="rotor_inertia" />
+  </xacro:rotor_macro>
+
+  <!-- Front left rotor -->
+  <xacro:rotor_macro
+    robot_namespace="${namespace}"
+    parent_link="${namespace}/base_link"
+    id="2"
+    direction="cw"
+    mass="${rotor_mass}"
+    radius="${rotor_radius}"
+    height="${rotor_height}"
+    velocity_slowdown_sim="${rotor_velocity_slowdown_sim}"
+    filter_time_constant_up="${rotor_filter_time_constant_up}"
+    filter_time_constant_down="${rotor_filter_time_constant_down}"
+    rotorspeed_max="${rotor_rotorspeed_max}"
+    motor_constant="${rotor_motor_constant}"
+    moment_constant="${rotor_moment_constant}"
+    drag_coefficient="${rotor_drag_coefficient}"
+    moment_coefficient="${rotor_moment_coefficient}"
+    mesh_file ="px4_cw.dae">
+    <origin xyz="${rotor_px} ${rotor_py} ${rotor_pz}" rpy="0 0 0" />
+    <xacro:insert_block name="rotor_inertia" />
+  </xacro:rotor_macro>
+
+  <!-- Back right rotor -->
+  <xacro:rotor_macro
+    robot_namespace="${namespace}"
+    parent_link="${namespace}/base_link"
+    id="3"
+    direction="cw"
+    mass="${rotor_mass}"
+    radius="${rotor_radius}"
+    height="${rotor_height}"
+    velocity_slowdown_sim="${rotor_velocity_slowdown_sim}"
+    filter_time_constant_up="${rotor_filter_time_constant_up}"
+    filter_time_constant_down="${rotor_filter_time_constant_down}"
+    rotorspeed_max="${rotor_rotorspeed_max}"
+    motor_constant="${rotor_motor_constant}"
+    moment_constant="${rotor_moment_constant}"
+    drag_coefficient="${rotor_drag_coefficient}"
+    moment_coefficient="${rotor_moment_coefficient}"
+    mesh_file ="px4_cw.dae">
+    <origin xyz="-${rotor_px} -${rotor_py} ${rotor_pz}" rpy="0 0 0" />
+    <xacro:insert_block name="rotor_inertia" />
+  </xacro:rotor_macro>
+
+</robot>

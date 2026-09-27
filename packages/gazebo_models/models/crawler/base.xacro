@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<robot name="crawler" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Property Blocks BODY-->
+  <xacro:property name="body_inertia">
+    <inertia
+      ixx="${1/12 * body_mass * (body_ly*body_ly + body_lz*body_lz)}"
+      iyy="${1/12 * body_mass * (body_lx*body_lx + body_lz*body_lz)}"
+      izz="${1/12 * body_mass * (body_lx*body_lx + body_ly*body_ly)}"
+      ixy="0.0" ixz="0.0"  iyz="0.0" />
+  </xacro:property>
+
+  <!-- Property Blocks WHEELS-->
+  <xacro:property name="side_wheel_inertia">  <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+    <inertia
+      ixx="${1/12*side_wheel_mass*(3*side_wheel_radius*side_wheel_radius + side_wheel_length*side_wheel_length)}"
+      iyy="${1/12*side_wheel_mass*(3*side_wheel_radius*side_wheel_radius + side_wheel_length*side_wheel_length)}"
+      izz="${1/2*side_wheel_mass*side_wheel_radius*side_wheel_radius}"
+      ixy="0.0" ixz="0.0"  iyz="0.0" />
+  </xacro:property>
+  <xacro:property name="caster_wheel_inertia">  <!-- [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] [kg.m^2] -->
+    <inertia
+      ixx="0.001"
+      iyy="0.001"
+      izz="0.001"
+      ixy="0.0" ixz="0.0"  iyz="0.0" />
+  </xacro:property>
+  <xacro:property name="wheel_axis">
+    <axis xyz="0 1 0" />
+  </xacro:property>
+
+  <!-- Included URDF Files -->
+  <xacro:include filename="$(find chroma_gazebo_models)/macros/parts/body_macro.xacro"/>
+  <xacro:include filename="$(find chroma_gazebo_models)/macros/parts/wheel_macro.xacro"/>
+  <xacro:include filename="$(find chroma_gazebo_models)/macros/parts/magnetic_wheel_macro.xacro"/>
+
+  <!-- Instantiate body_crawler_macro once -->
+  <xacro:body_macro
+    robot_namespace="${namespace}"
+    mass="${body_mass}"
+    length="${body_lx}"
+    width="${body_ly}"
+    height="${body_lz}"
+    mesh_file="${body_mesh_file}">
+    <origin xyz="0.0 0.0 0.1" rpy="0.0 0.0 0.0" />
+    <xacro:insert_block name="body_inertia" />
+  </xacro:body_macro>
+
+  <!-- Instantiate left wheel -->
+  <xacro:magnetic_wheel_macro
+    robot_namespace="${namespace}"
+    parent_link="${namespace}/base_link"
+    name="left"
+    mass="${side_wheel_mass}"
+    radius="${side_wheel_radius}"
+    length="${side_wheel_length}"
+    force="2000">
+    <origin xyz="0.1 ${side_wheels_separation/2.0} ${side_wheel_radius}" rpy="0.0 0.0 0.0" />
+    <xacro:insert_block name="side_wheel_inertia" />
+    <xacro:insert_block name="wheel_axis" />
+  </xacro:magnetic_wheel_macro>
+
+  <!-- Instantiate right wheel -->
+  <xacro:magnetic_wheel_macro
+    robot_namespace="${namespace}"
+    parent_link="${namespace}/base_link"
+    name="right"
+    mass="${side_wheel_mass}"
+    radius="${side_wheel_radius}"
+    length="${side_wheel_length}"
+    force="2000">
+    <origin xyz="0.1 -${side_wheels_separation/2.0} ${side_wheel_radius}" rpy="0.0 0.0 0.0" />
+    <xacro:insert_block name="side_wheel_inertia" />
+    <xacro:insert_block name="wheel_axis" />
+  </xacro:magnetic_wheel_macro>
+
+  <!-- Instantiate caster wheel -->
+  <xacro:wheel_macro
+    robot_namespace="${namespace}"
+    parent_link="${namespace}/base_link"
+    name="caster"
+    mass="0.01"
+    radius="0.05"
+    length="0.02">
+    <origin xyz="0.15 0 0.05" rpy="0.0 0.0 0.0" />
+    <xacro:insert_block name="caster_wheel_inertia" />
+    <xacro:insert_block name="wheel_axis" />
+  </xacro:wheel_macro>
+
+</robot>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>chroma_gazebo_plugins_msgs</name>
+  <version>1.0.0</version>
+  <description>Package containing messages for communicating Gazebo plugins</description>
+  <maintainer email="vincent.le-doze@inria.fr">Vincent LE DOZE</maintainer>
+  <author>Vincent LE DOZE</author>
+  <license>ASL 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile & run this package. -->
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+
+</package>

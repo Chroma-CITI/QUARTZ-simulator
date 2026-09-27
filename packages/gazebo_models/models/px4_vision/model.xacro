@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<robot name="px4_vision" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Arguments par defauts -->
+    <xacro:arg name="sensor_range" default="2.0"/>
+
+    <!-- Properties -->
+    <xacro:property name="namespace" value="$(arg namespace)" />
+    <xacro:property name="lat_home"  value="47.397742" />
+    <xacro:property name="lon_home"  value="8.545594" />
+    <xacro:property name="alt_home"  value="488.0" />
+    <xacro:property name="sensor_range" value="$(arg sensor_range)" />
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/models/px4_vision/base.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/models/px4_vision/controller.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/models/px4_vision/sensors.xacro" />
+
+</robot>

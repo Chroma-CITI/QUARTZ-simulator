@@ -1,0 +1,42 @@
+<launch>
+	<!-- vim: set ft=xml noet : -->
+	<!-- base node launch file-->
+
+	<arg name="fcu_url" default="/dev/ttyACM0:57600" />
+	<arg name="gcs_url" default="" />
+	<arg name="tgt_system" default="1" />
+	<arg name="tgt_component" default="1" />
+	<arg name="pluginlists_yaml" />
+	<arg name="config_yaml" />
+	<arg name="fcu_protocol" default="v2.0" />
+	<arg name="respawn_mavros" default="true" />
+    <arg name="namespace" default=""/>
+
+	<node pkg="mavros" type="mavros_node" name="mavros" required="$(eval not respawn_mavros)" clear_params="true" output="screen" respawn="$(arg respawn_mavros)">
+		<!-- Only needed if the gazebo body plugin is not used by px4 model -->
+		<!-- <remap from="mavros/global_position/local"   to="groundtruth/odom"/> -->
+		<param name="fcu_url" value="$(arg fcu_url)" />
+		<param name="gcs_url" value="$(arg gcs_url)" />
+		<param name="target_system_id" value="$(arg tgt_system)" />
+		<param name="target_component_id" value="$(arg tgt_component)" />
+		<param name="fcu_protocol" value="$(arg fcu_protocol)" />
+
+		<!-- load blacklist, config -->
+		<rosparam command="load" file="$(arg pluginlists_yaml)" />
+		<rosparam command="load" file="$(arg config_yaml)" />
+		<param name="conn/timesync_rate" value="1.0"/>
+        <!-- Have to namespace values in px4_config.yaml when used with multiple uavs -->
+		<param name="global_position/tf/send" value="false"/>
+        <param name="global_position/frame_id" value="$(arg namespace)map"/>
+        <param name="global_position/tf/frame_id" value="$(arg namespace)map"/>
+        <param name="global_position/child_frame_id" value="$(arg namespace)base_link"/>
+        <param name="global_position/tf/child_frame_id" value="$(arg namespace)base_link"/>
+        <!-- <param name="imu/frame_id" value="$(arg namespace)base_link"/>
+		<param name="local_pose/frame_id" value="$(arg namespace)odom"/>
+		<param name="local_pose/tf/send" value="false"/>
+		<param name="local_pose/tf/frame_id" value="$(arg namespace)odom"/>
+		<param name="local_pose/tf/child_frame_id" value="$(arg namespace)base_link"/>
+		<param name="odometry/fcu/odom_parent_id_des" value="$(arg namespace)odom"/>
+		<param name="odometry/fcu/odom_child_id_des" value="$(arg namespace)base_link"/> -->	
+	</node>
+</launch>

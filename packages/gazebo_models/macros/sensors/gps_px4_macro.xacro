@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+
+  <!-- Macro to add a GPS. -->
+  <xacro:macro name="gps_px4_macro"
+    params="
+      robot_namespace
+      parent_link
+      name
+      lat_home
+      lon_home
+      alt_home
+      *geometry
+      *origin">
+
+    <link name="${robot_namespace}/${name}_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="1e-5" />
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+
+      <collision name="${robot_namespace}_${name}_collision">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <xacro:insert_block name="geometry" />
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${robot_namespace}_${name}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${robot_namespace}/${name}_link" />
+    </joint>
+
+    <gazebo>
+      <plugin name="${robot_namespace}_${name}_plugin" filename="libgazebo_plugin__gps.so">
+        <robot_namespace>${robot_namespace}</robot_namespace>
+        <lat_home>${lat_home}</lat_home>
+        <lon_home>${lon_home}</lon_home>
+        <alt_home>${alt_home}</alt_home>
+        <gps_noise>true</gps_noise>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

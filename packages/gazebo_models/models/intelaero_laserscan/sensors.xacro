@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/gps_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/barometer_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/magnetometer_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/imu_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/velodyn_macro.xacro" />
+
+    <!-- Scanner -->
+    <xacro:velodyn_macro
+      robot_namespace="${namespace}"
+      parent_link="${namespace}/base_link"
+      visualization="False"
+      name="velodyn"
+      size_x="0.005"
+      size_y="0.005"
+      size_z="0.005"
+      update_rate="0.5"
+      mes_per_turn="200.0"
+      ray_count_h="2"
+      min_angle_h="-0.001"
+      max_angle_h="0.001"
+      ray_count_v="100"
+      min_angle_v="-1.57"
+      max_angle_v="0.05"
+      range_max="${sensor_range}"
+      range_min="0.5"
+      noise="-1.0">
+      <origin xyz="0 0 0.05" rpy="0 0 0" />
+    </xacro:velodyn_macro>
+
+    <!-- IMU. 100Hz -->
+    <xacro:imu_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="imu"
+        topic="imu"
+        mass="0.015"
+        freq="100"
+        gyroscope_noise_density="0.0003394"
+        gyroscope_random_walk="0.0"
+        gyroscope_bias_correlation_time="1000.0"
+        gyroscope_turn_on_bias_sigma="0.0"
+        accelerometer_noise_density="0.004"
+        accelerometer_random_walk="0.0"
+        accelerometer_bias_correlation_time="300.0"
+        accelerometer_turn_on_bias_sigma="0.0">
+        <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:imu_macro>
+
+    <!-- GPS -->
+    <xacro:gps_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="gps"
+        lat_home="${lat_home}"
+        lon_home="${lon_home}"
+        alt_home="${alt_home}">
+        <box size="0.05 0.05 0.115" />
+        <origin xyz="-0.06 0 0.095" rpy="0 0 0" />
+    </xacro:gps_macro>
+
+    <!-- Barometer -->
+    <xacro:barometer_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="barometer"
+        alt_home="${alt_home}"
+        noise_density="1.0"
+        freq="10.0">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:barometer_macro>
+
+    <!-- Magnetometer -->
+    <xacro:magnetometer_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="magnetometer"
+        lat_home="${lat_home}"
+        lon_home="${lon_home}"
+        alt_home="${alt_home}"
+        noise_density="0.00001"
+        freq="10.0">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:magnetometer_macro>
+
+
+</robot>

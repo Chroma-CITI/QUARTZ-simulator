@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Includes  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/camera_macro.xacro" />
+
+    <!-- Properties -->
+    <xacro:property name="r200_mass" value="0.2" /> <!-- [kg] -->
+    <xacro:property name="r200_lx" value="0.008" /> <!-- [m] -->
+    <xacro:property name="r200_ly" value="0.13" /> <!-- [m] -->
+    <xacro:property name="r200_lz" value="0.02" /> <!-- [m] -->
+
+    <!-- Macro to add a camera. -->
+    <xacro:macro name="intel_realsense_r200_macro"
+        params="
+            robot_namespace
+            parent_link
+            name
+            *origin">
+
+        <link name="${robot_namespace}/${name}_link">
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="${r200_mass}" />
+                <inertia
+                  ixx="${1/12 * r200_mass * (r200_ly*r200_ly + r200_lz*r200_lz)}"
+                  iyy="${1/12 * r200_mass * (r200_lx*r200_lx + r200_lz*r200_lz)}"
+                  izz="${1/12 * r200_mass * (r200_lx*r200_lx + r200_ly*r200_ly)}"
+                  ixy="0.0" ixz="0.0"  iyz="0.0" />
+            </inertial>
+
+            <visual name="${robot_namespace}_${name}_visual">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://chroma_gazebo_models/meshes/realsense_r200.dae"/>
+                 </geometry>
+            </visual>
+
+            <collision name="${robot_namespace}_${name}_collision">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="${r200_lx} ${r200_ly} ${r200_lz}" />
+                 </geometry>
+            </collision>
+        </link>
+
+        <joint name="${robot_namespace}_${name}_joint" type="fixed">
+            <xacro:insert_block name="origin" />
+            <parent link="${parent_link}" />
+            <child link="${robot_namespace}/${name}_link" />
+        </joint>
+
+        <joint name="${robot_namespace}_${name}_depth_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="-1.57 0 -1.57 "/>
+            <parent link="${robot_namespace}/${name}_link"/>
+            <child link="${robot_namespace}/${name}_depth_link"/>
+        </joint>
+        <link name="${robot_namespace}/${name}_depth_link"/>
+
+        <gazebo reference="${robot_namespace}/${name}_link">
+          <sensor name="${robot_namespace}_${name}_sensor" type="depth">
+              <always_on>true</always_on>
+              <update_rate>30.0</update_rate>
+              <visualize>true</visualize>
+              <camera name="${robot_namespace}_${name}_camera">
+                  <horizontal_fov>0.9512939061241963</horizontal_fov>
+                  <image>
+                      <width>640</width>
+                      <height>480</height>
+                      <format>R8G8B8</format>
+                  </image>
+                  <depth_camera>
+                      <output>1</output>
+                  </depth_camera>
+                  <clip>
+                      <near>0.5</near>
+                      <far>10</far>
+                  </clip>
+                  <noise>
+                      <type>gaussian</type>
+                      <!-- Noise is sampled independently per pixel on each frame.
+                       That pixel's noise value is added to each of its color
+                       channels, which at that point lie in the range [0,1]. -->
+                      <mean>0.0</mean>
+                      <stddev>0.007</stddev>
+                  </noise>
+              </camera>
+
+              <plugin name="${robot_namespace}_${name}_plugin" filename="libgazebo_ros_openni_kinect.so">
+                  <baseline>0.2</baseline>
+                  <alwaysOn>true</alwaysOn>
+                  <updateRate>1.0</updateRate>
+                  <cameraName>${robot_namespace}/${name}</cameraName>
+                  <imageTopicName>rgb/image_rect_color</imageTopicName>
+                  <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+                  <depthImageTopicName>depth_registered/sw_registered/image_rect_raw</depthImageTopicName>
+                  <depthImageInfoTopicName>depth_registered/sw_registered/camera_info</depthImageInfoTopicName>
+                  <pointCloudTopicName>points</pointCloudTopicName>
+                  <frameName>${robot_namespace}/${name}_depth_link</frameName>
+                  <pointCloudCutoff>0.5</pointCloudCutoff>
+                  <distortionK1>-0.0685457065701484</distortionK1>
+                  <distortionK2>0.02864835411310196</distortionK2>
+                  <distortionK3>0.0</distortionK3>
+                  <distortionT1>0.0011006593704223633</distortionT1>
+                  <distortionT2>-0.001829572836868465</distortionT2>
+                  <CxPrime>0</CxPrime>
+                  <Cx>317.4959716796875</Cx>
+                  <Cy>262.1038818359375</Cy>
+                  <focalLength>621.250050</focalLength>
+                  <hackBaseline>0</hackBaseline>
+              </plugin>
+          </sensor>
+        </gazebo>
+
+        <xacro:camera_macro
+            robot_namespace="${namespace}"
+            parent_link="${robot_namespace}/${name}_link"
+            name="${name}/ir"
+            mesh="camera_cmos.dae"
+            frame_rate="30"
+            horizontal_fov="2"
+            image_width="640"
+            image_height="480"
+            image_format="L8"
+            min_distance="0.02"
+            max_distance="300"
+            noise_mean="0.0"
+            center_x="320"
+            center_y="240"
+            noise_stddev="0.007"
+            hackBaseline="0.0"
+            distortionK1="0.0"
+            distortionK2="0.0"
+            distortionK3="0.0"
+            distortionT1="0.0"
+            distortionT2="0.0">
+            <box size="0.02 0.02 0.02" />
+            <origin xyz="0.0065 -.045 0" rpy="0 0 0" />
+        </xacro:camera_macro>
+
+        <xacro:camera_macro
+            robot_namespace="${namespace}"
+            parent_link="${robot_namespace}/${name}_link"
+            name="${name}/ir2"
+            mesh="camera_cmos.dae"
+            frame_rate="30"
+            horizontal_fov="2"
+            image_width="640"
+            image_height="480"
+            image_format="L8"
+            min_distance="0.02"
+            max_distance="300"
+            noise_mean="0.0"
+            center_x="320"
+            center_y="240"
+            noise_stddev="0.007"
+            hackBaseline="0.0"
+            distortionK1="0.0"
+            distortionK2="0.0"
+            distortionK3="0.0"
+            distortionT1="0.0"
+            distortionT2="0.0">
+            <box size="0.02 0.02 0.02" />
+            <origin xyz="0.0065 .025 0" rpy="0 0 0"/>
+        </xacro:camera_macro>
+
+    </xacro:macro>
+</robot>

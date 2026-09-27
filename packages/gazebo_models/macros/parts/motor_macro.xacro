@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+
+  <!-- Rotor joint and link -->
+  <xacro:macro name="rotor_macro"
+    params="
+    robot_namespace
+    parent_link
+    id
+    direction
+    mass
+    radius
+    height
+    velocity_slowdown_sim
+    filter_time_constant_up
+    filter_time_constant_down
+    rotorspeed_max
+    motor_constant
+    moment_constant
+    drag_coefficient
+    moment_coefficient
+    mesh_file
+    *origin
+    *inertia">
+
+    <link name="${robot_namespace}/rotor_${id}_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="${mass}" /> <!-- [kg] -->
+        <xacro:insert_block name="inertia" />
+      </inertial>
+
+      <visual name="${robot_namespace}_rotor_${id}_visual">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://chroma_gazebo_models/meshes/${mesh_file}"/>
+        </geometry>
+      </visual>
+
+      <collision name="${robot_namespace}_rotor_${id}_collision">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="${height}" radius="${radius}" /> <!-- [m] -->
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${robot_namespace}_rotor_${id}_joint" type="continuous">
+      <xacro:insert_block name="origin" />
+      <axis xyz="0 0 1" />
+      <parent link="${parent_link}" />
+      <child link="${robot_namespace}/rotor_${id}_link" />
+    </joint>
+
+    <gazebo>
+      <plugin
+          filename="libgazebo_plugin__motor.so"
+          name="${robot_namespace}_motor_${id}_plugin" >
+        <robotNamespace>${robot_namespace}</robotNamespace>
+        <motorNumber>${id}</motorNumber>
+        <jointName>${robot_namespace}_rotor_${id}_joint</jointName>
+        <linkName>${robot_namespace}/rotor_${id}_link</linkName>
+        <commandSubTopic>command/rotorspeed</commandSubTopic>
+        <rotorVelocitySlowdownSim>${velocity_slowdown_sim}</rotorVelocitySlowdownSim>
+        <turningDirection>${direction}</turningDirection>
+        <timeConstantUp>${filter_time_constant_up}</timeConstantUp>
+        <timeConstantDown>${filter_time_constant_down}</timeConstantDown>
+        <maxRotVelocity>${rotorspeed_max}</maxRotVelocity>
+        <motorConstant>${motor_constant}</motorConstant>
+        <momentConstant>${moment_constant}</momentConstant>
+        <rotorDragCoefficient>${drag_coefficient}</rotorDragCoefficient>
+        <rollingMomentCoefficient>${moment_coefficient}</rollingMomentCoefficient>
+        <motorSpeedPubTopic>/rotorspeed/${id}</motorSpeedPubTopic>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<robot name="crawler" xmlns:xacro="http://ros.org/wiki/xacro">
+    <!-- Properties -->
+    <xacro:property name="namespace"               value="$(arg namespace)"/>
+
+    <xacro:property name="body_mesh_file"          value=" "/>
+    <xacro:property name="body_mass"               value="2.5"/> <!-- [kg] -->
+    <xacro:property name="body_lx"                 value="0.3"/> <!-- [m] -->
+    <xacro:property name="body_ly"                 value="0.2"/> <!-- [m] -->
+    <xacro:property name="body_lz"                 value="0.1"/> <!-- [m] -->
+
+    <xacro:property name="side_wheel_mass"         value="0.5"/> <!-- [kg] -->
+    <xacro:property name="side_wheel_radius"       value="0.1"/> <!-- [m] -->
+    <xacro:property name="side_wheel_length"       value="0.05"/> <!-- [m] -->
+    <xacro:property name="side_wheels_separation"  value="0.26"/> <!-- [m] -->
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/models/crawler/base.xacro"/>
+    <xacro:include filename="$(find chroma_gazebo_models)/models/crawler/sensors.xacro"/>
+    <xacro:include filename="$(find chroma_gazebo_models)/models/crawler/controller.xacro"/>
+
+</robot>

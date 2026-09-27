@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <env name="GAZEBO_MODEL_PATH" value="$(find chroma_gazebo_worlds)/models:${GAZEBO_MODEL_PATH}"/>
+  <env name="GAZEBO_RESOURCE_PATH" value="$(find chroma_gazebo_worlds)/worlds:${GAZEBO_RESOURCE_PATH}"/>
+
+  <arg name="drone"      default="crazyflie"/>
+  <arg name="drone_name" default="$(arg drone)"/>
+  <arg name="number"     default="2"/>
+  <arg name="x"          default="0.0"/>
+  <arg name="y"          default="0.0"/>
+  <arg name="z"          default="0.0"/>
+  <arg name="roll"       default="0.0" />
+  <arg name="pitch"      default="0.0" />
+  <arg name="yaw"        default="0.0" />
+
+  <arg name="world"      default="empty_world"/>
+  <arg name="headless"   default="true"/>
+  <arg name="gui"        default="true"/>
+  <arg name="paused"     default="true"/>
+
+  <arg name="shape"      default="linear_x"/>
+  <arg name="shape_gap"  default="2.0"/>
+
+  <!-- Need at least 1 robot -->
+  <group if="$(eval arg('number') > 0)">
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(find chroma_gazebo_worlds)/worlds/$(arg world).world"/>
+      <!-- more default parameters can be changed here -->
+      <arg name="debug"      value="false" />
+      <arg name="paused"     value="$(arg paused)"/>
+      <arg name="headless"   value="$(arg headless)"/>
+      <arg name="gui"        value="$(arg gui)"/>
+      <arg name="verbose"    value="true"/>
+    </include>
+
+    <!-- Spawn 3DR Model -->
+    <include file="$(find chroma_gazebo_models)/launch/spawn_recursif.launch">
+      <arg name="type"       value="$(arg drone)"/>
+      <arg name="name"       value="$(arg drone_name)"/>
+      <arg name="number"     value="$(arg number)"/>
+      <!-- <arg name="id" value="$(arg number)"/> -->
+      <arg name="x"          value="$(arg x)"/>
+      <arg name="y"          value="$(arg y)"/>
+      <arg name="z"          value="$(arg z)"/>
+      <arg name="roll"       value="$(arg roll)" />
+      <arg name="pitch"      value="$(arg pitch)" />
+      <arg name="yaw"        value="$(arg yaw)" />
+      <arg name="shape"      value="$(arg shape)"/>
+      <arg name="shape_gap"  value="$(arg shape_gap)"/>
+    </include>
+  </group>
+
+</launch>

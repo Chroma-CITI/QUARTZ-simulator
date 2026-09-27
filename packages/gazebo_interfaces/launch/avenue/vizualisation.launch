@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <arg name="world" default="empty_world"/>
+    <arg name="headless" default="true"/>
+    <arg name="gui" default="$(env MANUAL_LAUNCH)" />
+    <arg name="paused" default="$(env MANUAL_LAUNCH)" />
+
+    <!-- Load bounding boxes -->
+    <rosparam param="/default/bounding_box">[100.0, -100.0, 100.0, -100.0, 50.0, 0.0]</rosparam>
+    <group if="$(eval arg('world') == 'tunnel')">
+      <rosparam param="/default/bounding_box">[100.0, -100.0, 100.0, -100.0, 4.0, 0.0]</rosparam>
+    </group>
+    <group if="$(eval arg('world') == 'house')">
+      <rosparam param="/default/bounding_box">[20.0, -25.0, 20.0, -20.0, 20.0, 0.0]</rosparam>
+    </group>
+    <group if="$(eval arg('world') == 'ville')">
+      <rosparam param="/default/bounding_box">[70.0, -20.0, 20.0, -26.0, 50.0, 0.0]</rosparam>
+    </group>
+    <group if="$(eval arg('world') == 'structure')">
+      <rosparam param="/default/bounding_box">[16.0, -10.0, 13.0, -13.0, 15.0, 0.0]</rosparam>
+    </group>
+
+
+    <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(find chroma_gazebo_worlds)/worlds/$(arg world).world"/>
+      <!-- more default parameters can be changed here -->
+      <arg name="debug"    value="false" />
+      <arg name="paused"   value="$(arg paused)"/>
+      <arg name="headless" value="$(arg headless)"/>
+      <arg name="gui"      value="$(arg gui)"/>
+      <arg name="verbose"  value="true"/>
+    </include>
+
+</launch>

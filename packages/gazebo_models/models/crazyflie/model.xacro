@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<robot name="crazyflie" xmlns:xacro="http://ros.org/wiki/xacro">
+    <!-- Properties -->
+    <xacro:property name="namespace" value="$(arg namespace)"/>
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/models/crazyflie/base.xacro"/>
+    <xacro:include filename="$(find chroma_gazebo_models)/models/crazyflie/sensors.xacro"/>
+    <xacro:include filename="$(find chroma_gazebo_models)/models/crazyflie/controller.xacro"/>
+
+</robot>

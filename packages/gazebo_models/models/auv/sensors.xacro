@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/imu_macro.xacro"/>
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/uwb_macro.xacro"/>
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/camera_macro.xacro"/>
+
+    <!-- IMU. -->
+    <xacro:imu_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="imu"
+        topic="imu"
+        mass="0.015"
+        freq="20.0"
+        gyroscope_noise_density="0.0"
+        gyroscope_random_walk="0.0"
+        gyroscope_bias_correlation_time="1000.0"
+        gyroscope_turn_on_bias_sigma="0.0"
+        accelerometer_noise_density="0.0"
+        accelerometer_random_walk="0.0"
+        accelerometer_bias_correlation_time="300.0"
+        accelerometer_turn_on_bias_sigma="0.0">
+        <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:imu_macro>
+
+    <!-- UWB -->
+    <xacro:uwb_macro
+      robot_namespace="${namespace}"
+      parent_link="${namespace}/base_link"
+      uwb_topic="uwb"
+      odom_topic="/${namespace}/groundtruth/odom"
+      freq="100.0">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:uwb_macro>
+
+    <!-- Camera -->
+    <xacro:camera_macro
+      robot_namespace="${namespace}"
+      parent_link="${namespace}/base_link"
+      name="head"
+      mesh=" "
+      frame_rate="5.0"
+      horizontal_fov="1.3962634"
+      image_width="256"
+      image_height="256"
+      image_format="R8G8B8"
+      min_distance="0.02"
+      max_distance="300"
+      center_x="0.0"
+      center_y="0.0"
+      hackBaseline="0.07"
+      distortionK1="0.0"
+      distortionK2="0.0"
+      distortionK3="0.0"
+      distortionT1="0.0"
+      distortionT2="0.0"
+      noise_mean="0.0"
+      noise_stddev="0.007">
+      <box size="0.01 0.02 0.02" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:camera_macro>
+
+</robot>

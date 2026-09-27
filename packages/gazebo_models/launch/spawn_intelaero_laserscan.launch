@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- Arguments -->
+  <arg name="name"  default="intelaero_laserscan"/>
+  <arg name="id"    default="0"/>
+  <arg name="x"     default="0.0"/>
+  <arg name="y"     default="0.0"/>
+  <arg name="z"     default="0.0"/>
+  <arg name="roll"  default="0" />
+  <arg name="pitch" default="0" />
+  <arg name="yaw"   default="0.5" />
+
+  <arg name="model"         default="$(find chroma_gazebo_models)/models/intelaero_laserscan/model.xacro"/>
+  <arg name="tf_prefix"     default="$(optenv ROS_NAMESPACE)"/>
+  <arg name="fcu_port"      default="$(eval 14560 + 100*arg('id'))"/>
+  <arg name="qgc_port"      default="$(eval 14550 + 100*arg('id'))"/>
+  <arg name="sensor_range"  default="10"/>
+
+  <!-- send the robot XML to param server -->
+  <param name="robot_description_$(arg name)" command="
+    $(find xacro)/xacro '$(arg model)'
+    namespace:=$(arg name)
+    fcu_port:=$(arg fcu_port)
+    qgc_port:=$(arg qgc_port)
+    sensor_range:=$(arg sensor_range)"/>
+
+  <param name="tf_prefix_$(arg name)" type="string" value="$(arg tf_prefix)" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_$(arg name)" pkg="gazebo_ros" type="spawn_model"
+   args="-param robot_description_$(arg name)
+         -urdf
+         -x $(arg x)
+         -y $(arg y)
+         -z $(arg z)
+         -R $(arg roll)
+         -P $(arg pitch)
+         -Y $(arg yaw)
+         -model $(arg name)"
+   respawn="false" output="screen">
+  </node>
+
+
+</launch>

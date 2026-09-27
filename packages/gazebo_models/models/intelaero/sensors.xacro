@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/imu_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/camera_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/intel_realsense_r200_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/gps_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/barometer_macro.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/macros/sensors/magnetometer_macro.xacro" />
+
+    <!-- IMU. 250Hz -->
+    <!-- <xacro:imu_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="imu"
+        topic="imu"
+        mass="0.015"
+        freq="217.55"
+        gyroscope_noise_density="0.00957497"
+        gyroscope_random_walk="0.00071626"
+        gyroscope_bias_correlation_time="1.0"
+        gyroscope_turn_on_bias_sigma="0.0"
+        accelerometer_noise_density="0.03341116"
+        accelerometer_random_walk="0.00193596"
+        accelerometer_bias_correlation_time="1.0"
+        accelerometer_turn_on_bias_sigma="0.0">
+        <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:imu_macro> -->
+
+    <!-- IMU. 50Hz -->
+    <!-- <xacro:imu_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="imu"
+        topic="imu"
+        mass="0.015"
+        freq="49.82"
+        gyroscope_noise_density="0.01444146"
+        gyroscope_random_walk="0.00087842"
+        gyroscope_bias_correlation_time="1.0"
+        gyroscope_turn_on_bias_sigma="0.0"
+        accelerometer_noise_density="0.062873"
+        accelerometer_random_walk="0.00200895"
+        accelerometer_bias_correlation_time="1.0"
+        accelerometer_turn_on_bias_sigma="0.0">
+        <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:imu_macro> -->
+
+    <xacro:imu_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="imu"
+        topic="imu"
+        mass="0.015"
+        freq="100"
+        gyroscope_noise_density="0.0003394"
+        gyroscope_random_walk="0.0"
+        gyroscope_bias_correlation_time="1000.0"
+        gyroscope_turn_on_bias_sigma="0.0"
+        accelerometer_noise_density="0.004"
+        accelerometer_random_walk="0.0"
+        accelerometer_bias_correlation_time="300.0"
+        accelerometer_turn_on_bias_sigma="0.0">
+        <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:imu_macro>
+
+    <!-- Camera Front. -->
+    <xacro:camera_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="front"
+        mesh="camera_cmos.dae"
+        frame_rate="30"
+        horizontal_fov="2"
+        image_width="1280"
+        image_height="720"
+        image_format="R8G8B8"
+        min_distance="0.02"
+        max_distance="300"
+        noise_mean="0.0"
+        center_x="${1280/2}"
+        center_y="${720/2}"
+        noise_stddev="0.007"
+        hackBaseline="0.0"
+        distortionK1="0.0"
+        distortionK2="0.0"
+        distortionK3="0.0"
+        distortionT1="0.0"
+        distortionT2="0.0">
+        <box size="0.02 0.02 0.02" />
+        <origin xyz="0.105 0.0 0.07" rpy="0 0 0" />
+    </xacro:camera_macro>
+
+    <!-- Camera Bottom -->
+    <xacro:camera_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="bottom"
+        mesh="camera_cmos.dae"
+        frame_rate="30"
+        horizontal_fov="1.2258730827982804"
+        image_width="640"
+        image_height="480"
+        image_format="L8"
+        min_distance="0.001"
+        max_distance="300"
+        noise_mean="0.0"
+        center_x="299.5053120524069"
+        center_y="231.93169653603337"
+        noise_stddev="0.007"
+        hackBaseline="0.0"
+        distortionK1="0.026671"
+        distortionK2="-0.027087"
+        distortionK3="0.0"
+        distortionT1="-0.005163"
+        distortionT2="-0.000072">
+        <box size="0.02 0.02 0.02" />
+        <origin xyz="0.0 0.0 0.055" rpy="0 1.57 1.57" />
+    </xacro:camera_macro>
+
+    <!-- IntelRealsens -->
+    <xacro:intel_realsense_r200_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="r200" >
+        <origin xyz="0.105 0 0.085" rpy="0 0 0" />
+    </xacro:intel_realsense_r200_macro>
+
+    <!-- GPS -->
+    <xacro:gps_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="gps"
+        lat_home="${lat_home}"
+        lon_home="${lon_home}"
+        alt_home="${alt_home}">
+        <box size="0.05 0.05 0.115" />
+        <origin xyz="-0.06 0 0.095" rpy="0 0 0" />
+    </xacro:gps_macro>
+
+    <!-- Barometer -->
+    <xacro:barometer_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="barometer"
+        alt_home="${alt_home}"
+        noise_density="0.5"
+        freq="10.0">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:barometer_macro>
+
+    <!-- Magnetometer -->
+    <xacro:magnetometer_macro
+        robot_namespace="${namespace}"
+        parent_link="${namespace}/base_link"
+        name="magnetometer"
+        lat_home="${lat_home}"
+        lon_home="${lon_home}"
+        alt_home="${alt_home}"
+        noise_density="0.00001"
+        freq="10.0">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:magnetometer_macro>
+
+</robot>

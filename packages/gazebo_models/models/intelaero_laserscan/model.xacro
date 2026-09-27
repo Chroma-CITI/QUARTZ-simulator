@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<robot name="intelaero_laserscan" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Arguments par defauts -->
+    <xacro:arg name="fcu_port" default="14560"/>
+    <xacro:arg name="qgc_port" default="14550"/>
+    <xacro:arg name="sensor_range" default="10.0"/>
+
+    <!-- Properties -->
+    <xacro:property name="namespace" value="$(arg namespace)" />
+    <xacro:property name="lat_home"  value="47.397742" />
+    <xacro:property name="lon_home"  value="8.545594" />
+    <xacro:property name="alt_home"  value="488.0" />
+    <xacro:property name="fcu_port"  value="$(arg fcu_port)" />
+    <xacro:property name="qgc_port"  value="$(arg qgc_port)" />
+
+    <xacro:property name="sensor_range" value="$(arg sensor_range)" />
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/models/intelaero/base.xacro" />
+    <!-- <xacro:include filename="$(find chroma_gazebo_models)/models/intelaero/interface_mavlink.xacro"/-->
+    <xacro:include filename="$(find chroma_gazebo_models)/models/intelaero_laserscan/controller.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/models/intelaero_laserscan/sensors.xacro" />
+
+</robot>

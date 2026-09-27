@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>chroma_gazebo_interfaces</name>
+    <version>1.0.0</version>
+    <description>Interface pour simulation de drones </description>
+    <maintainer email="vincent.le-doze@inria.fr">vledoze</maintainer>
+    <license>ASL 2.0</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <!-- Dependencies needed to compile & run this package. -->
+    <depend>rospy</depend>
+    <depend>std_srvs</depend>
+    <depend>sensor_msgs</depend>
+    <depend>nav_msgs</depend>
+    <depend>geometry_msgs</depend>
+    <depend>chroma_gazebo_plugins_msgs</depend>
+
+    <!-- Dependencies needed to run this package. -->
+    <exec_depend>joy</exec_depend>
+
+
+</package>

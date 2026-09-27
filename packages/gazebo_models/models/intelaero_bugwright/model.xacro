@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<robot name="intelaero_bugwright" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Arguments par defauts -->
+    <xacro:arg name="min_sensor_range" default="0.1"/>
+    <xacro:arg name="sensor_range" default="2.0"/>
+    <xacro:arg name="vertical_min_angle" default="-1.57"/>
+    <xacro:arg name="vertical_max_angle" default="1.57"/>
+
+    <!-- Properties -->
+    <xacro:property name="namespace" value="$(arg namespace)" />
+    <xacro:property name="lat_home"  value="47.397742" />
+    <xacro:property name="lon_home"  value="8.545594" />
+    <xacro:property name="alt_home"  value="488.0" />
+    <xacro:property name="min_sensor_range" value="$(arg min_sensor_range)" />
+    <xacro:property name="sensor_range" value="$(arg sensor_range)" />
+    <xacro:property name="vertical_min_angle" value="$(arg vertical_min_angle)" />
+    <xacro:property name="vertical_max_angle" value="$(arg vertical_max_angle)" />
+
+    <!-- fichiers inclus  -->
+    <xacro:include filename="$(find chroma_gazebo_models)/models/intelaero_bugwright/base.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/models/intelaero_bugwright/controller.xacro" />
+    <xacro:include filename="$(find chroma_gazebo_models)/models/intelaero_bugwright/sensors.xacro" />
+
+</robot>

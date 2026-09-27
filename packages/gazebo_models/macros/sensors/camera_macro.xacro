@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Macro to add a camera. -->
+  <xacro:macro name="camera_macro"
+    params="
+      robot_namespace
+      parent_link
+      name
+      mesh
+      frame_rate
+      horizontal_fov
+      image_width
+      image_height
+      image_format
+      min_distance
+      max_distance
+      center_x
+      center_y
+      hackBaseline
+      distortionK1
+      distortionK2
+      distortionK3
+      distortionT1
+      distortionT2
+      noise_mean
+      noise_stddev
+      *geometry
+      *origin">
+
+    <link name="${robot_namespace}/${name}_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="1e-5" />
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+
+      <visual name="${robot_namespace}_${name}_visual">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <xacro:if value="${mesh == ' '}">
+            <xacro:insert_block name="geometry" />
+          </xacro:if>
+          <xacro:unless value="${mesh == ' '}">
+            <mesh filename="package://chroma_gazebo_models/meshes/${mesh}"/>
+          </xacro:unless>
+        </geometry>
+      </visual>
+
+      <collision name="${robot_namespace}_${name}_collision">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <xacro:insert_block name="geometry" />
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${robot_namespace}_${name}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${robot_namespace}/${name}_link" />
+    </joint>
+
+    <gazebo reference="${robot_namespace}/${name}_link">
+      <sensor type="camera" name="${robot_namespace}_${name}_sensor">
+        <update_rate>${frame_rate}</update_rate>
+        <camera name="${robot_namespace}_${name}_camera">
+          <horizontal_fov>${horizontal_fov}</horizontal_fov>
+          <image>
+            <width>${image_width}</width>
+            <height>${image_height}</height>
+            <format>${image_format}</format>
+          </image>
+          <clip>
+            <near>${min_distance}</near>
+            <far>${max_distance}</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <!-- Noise is sampled independently per pixel on each frame.
+                 That pixel's noise value is added to each of its color
+                 channels, which at that point lie in the range [0,1]. -->
+            <mean>${noise_mean}</mean>
+            <stddev>${noise_stddev}</stddev>
+          </noise>
+        </camera>
+
+        <plugin name="${robot_namespace}_${name}_plugin" filename="libgazebo_ros_camera.so">
+            <robot_namespace>${robot_namespace}</robot_namespace>
+            <alwaysOn>true</alwaysOn>
+            <updateRate>${frame_rate}</updateRate>
+            <cameraName>${robot_namespace}/${name}</cameraName>
+            <imageTopicName>image_raw</imageTopicName>
+            <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+            <frameName>${robot_namespace}/${name}_link</frameName>
+            <hackBaseline>${hackBaseline}</hackBaseline>
+            <Cx>${center_x}</Cx>
+            <Cy>${center_y}</Cy>
+            <focal_length>${image_width / (2*tan((horizontal_fov)/2))}</focal_length>
+            <distortionK1>${distortionK1}</distortionK1>
+            <distortionK2>${distortionK2}</distortionK2>
+            <distortionK3>${distortionK3}</distortionK3>
+            <distortionT1>${distortionT1}</distortionT1>
+            <distortionT2>${distortionT2}</distortionT2>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

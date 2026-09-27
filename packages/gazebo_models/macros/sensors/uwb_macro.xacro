@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Macro to add an UWB. -->
+  <xacro:macro name="uwb_macro"
+    params="
+      robot_namespace
+      parent_link
+      uwb_topic
+      odom_topic
+      freq
+      *origin">
+
+    <!-- UWB link -->
+    <link name="${robot_namespace}/uwb_antenna_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.05"/>  <!-- [kg] -->
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+      </inertial>
+    </link>
+
+    <!-- UWB joint -->
+    <joint name="${robot_namespace}/uwb_antenna_joint" type="revolute">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent_link}"/>
+      <child link="${robot_namespace}/uwb_antenna_link"/>
+      <limit upper="0" lower="0" effort="0" velocity="0" />
+    </joint>
+
+    <!-- UWB plugin -->
+    <!-- https://www.decawave.com/wp-content/uploads/2018/09/dwm1000-datasheet-1.pdf -->
+    <gazebo>
+      <plugin filename="libgazebo_plugin__uwb.so" name="${robot_namespace}_uwb_plugin">
+        <robot_namespace>${robot_namespace}</robot_namespace>
+        <link_name>${robot_namespace}/uwb_antenna_link</link_name>
+        <freq>${freq}</freq>
+        <essid>${robot_namespace}</essid>
+        <rx_gain>-3.0</rx_gain>       <!-- ddepending on the angle for real -->
+        <rx_power>-70.0</rx_power>  <!-- reception threshold in dBm -->
+        <tx_gain>-3.0</tx_gain>
+        <tx_power>20.0</tx_power>    <!-- sended power in dBm -->
+        <tx_freq>3.5</tx_freq> 	     <!--  GHz -->
+        <stddev_per_meter>0.01</stddev_per_meter>
+        <uwb_topic>${uwb_topic}</uwb_topic>
+        <odom_topic>${odom_topic}</odom_topic>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

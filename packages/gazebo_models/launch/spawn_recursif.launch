@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="type"       default="crazyflie"/>
+  <arg name="name"       default="$(arg type)"/>
+  <arg name="number"     default="1"/>
+  <arg name="id"         default="$(eval arg('number') - 1)"/>
+  <arg name="x"          default="0.0"/>
+  <arg name="y"          default="0.0"/>
+  <arg name="z"          default="0.0"/>
+  <arg name="roll"       default="0" />
+  <arg name="pitch"      default="0" />
+  <arg name="yaw"        default="0.5" />
+  <arg name="shape"      default="linear_x"/>
+  <arg name="shape_gap"  default="2.0"/>
+
+  <!-- Spawn 3DR Model -->
+  <include file="$(find chroma_gazebo_models)/launch/spawn_$(arg type).launch">
+    <arg name="name"     value="$(arg name)_$(arg id)"/>
+    <arg name="id"       value="$(arg id)"/>
+    <arg if="$(eval arg('shape')=='linear_x')" name="x" value="$(eval arg('x') + arg('shape_gap')*arg('id'))"/>
+    <arg if="$(eval arg('shape')!='linear_x')" name="x" value="$(arg x)"/>
+    <arg if="$(eval arg('shape')=='linear_y')" name="y" value="$(eval arg('y') + arg('shape_gap')*arg('id'))"/>
+    <arg if="$(eval arg('shape')!='linear_y')" name="y" value="$(arg y)"/>
+    <arg if="$(eval arg('shape')=='linear_z')" name="z" value="$(eval arg('z') + arg('shape_gap')*arg('id'))"/>
+    <arg if="$(eval arg('shape')!='linear_z')" name="z" value="$(arg z)"/>
+    <arg name="roll"     value="$(arg roll)" />
+    <arg name="pitch"    value="$(arg pitch)" />
+    <arg name="yaw"      value="$(arg yaw)" />
+  </include>
+
+  <!-- Recursivité -->
+  <include file="$(find chroma_gazebo_models)/launch/spawn_recursif.launch" if="$(eval arg('id') > 0)">
+    <arg name="type"      value="$(arg type)"/>
+    <arg name="name"      value="$(arg name)"/>
+    <arg name="id"        value="$(eval arg('id') - 1)"/>
+    <arg if="$(eval arg('shape')=='circle_xy')" name="x" value="$(eval arg('x') + arg('shape_gap')*(cos(pi/4.0*float(arg('id') - 1)) - cos(pi/4.0*float(arg('id')))))"/>
+    <arg if="$(eval arg('shape')!='circle_xy')" name="x" value="$(arg x)"/>
+    <arg if="$(eval arg('shape')=='circle_xy')" name="y" value="$(eval arg('y') + arg('shape_gap')*(sin(pi/4.0*float(arg('id') - 1)) - sin(pi/4.0*float(arg('id')))))"/>
+    <arg if="$(eval arg('shape')!='circle_xy')" name="y" value="$(arg y)"/>
+    <arg name="z"         value="$(arg z)"/>
+    <arg name="roll"      value="$(arg roll)" />
+    <arg name="pitch"     value="$(arg pitch)" />
+    <arg name="yaw"       value="$(arg yaw)" />
+    <arg name="shape"     value="$(arg shape)"/>
+    <arg name="shape_gap" value="$(arg shape_gap)"/>
+  </include>
+
+</launch>

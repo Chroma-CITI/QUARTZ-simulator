@@ -1,0 +1,13 @@
+Header header
+
+int32 sensor_id
+int32 quality
+int32 integration_time_us
+int32 time_delta_distance_us
+float64 integrated_x
+float64 integrated_y
+float64 integrated_xgyro
+float64 integrated_ygyro
+float64 integrated_zgyro
+float64 temperature
+float64 distance

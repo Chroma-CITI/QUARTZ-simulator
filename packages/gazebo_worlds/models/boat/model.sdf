@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="boat">
+    <pose>0 0 0  0 0 0</pose>
+    <static>true</static>
+
+    <link name="cargo_link">
+      <!-- <pose>-17.3 -29 -110  0 0 0</pose>  -->
+      <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>model://boat/meshes/SecondShip.dae</uri>
+            </mesh>
+          </geometry>
+      </visual>
+      <collision name="colision">
+        <geometry>
+          <mesh>
+            <uri>model://boat/meshes/SecondShipHullOnly.dae</uri>
+            <!-- <scale>0.001 0.001 0.001</scale> -->
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <collide_bitmask>0xffff</collide_bitmask>
+            <ode>
+              <max_vel>0</max_vel>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1000</mu>
+              <mu2>500</mu2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>0</threshold>
+          </bounce>
+        </surface>
+      </collision>
+    </link>
+
+    <link name='landing_plateform_link'>
+      <pose>0 -17.5 6.0 0 0 0</pose>
+      <inertial>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.145833</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.145833</iyy>
+          <iyz>0</iyz>
+          <izz>0.125</izz>
+        </inertia>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+      </inertial>
+      <collision name='collision'>
+        <geometry>
+          <cylinder>
+            <radius>2</radius>
+            <length>1</length>
+          </cylinder>
+        </geometry>
+        <max_contacts>10</max_contacts>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='visual'>
+        <geometry>
+          <cylinder>
+            <radius>2</radius>
+            <length>1</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <self_collide>0</self_collide>
+      <enable_wind>0</enable_wind>
+      <kinematic>0</kinematic>
+    </link>
+  </model>
+  
+</sdf>

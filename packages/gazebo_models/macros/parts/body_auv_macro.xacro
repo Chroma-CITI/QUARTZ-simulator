@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Main multirotor link -->
+  <xacro:macro name="body_auv_macro"
+    params="
+    robot_namespace
+    mass
+    length
+    width
+    height
+    mesh_file_visual
+    mesh_file_collision
+    *origin
+    *inertia">
+
+    <!-- Body frame -->
+    <link name="${robot_namespace}/base_link">
+      <inertial>
+        <xacro:insert_block name="origin" />
+        <mass value="${mass}" />  <!-- [kg] -->
+        <xacro:insert_block name="inertia" />
+      </inertial>
+
+      <visual name="${robot_namespace}_body_visual">
+        <xacro:insert_block name="origin" />
+        <geometry>
+          <xacro:if value="${mesh_file_visual == ' '}">
+            <box size="${length} ${width} ${height}" /> <!-- [m] [m] [m] -->
+          </xacro:if>
+          <xacro:unless value="${mesh_file_visual == ' '}">
+            <mesh filename="${mesh_file_visual}" />
+          </xacro:unless>
+        </geometry>
+      </visual>
+
+      <collision name="${robot_namespace}_body_collision">
+        <xacro:insert_block name="origin" />
+        <geometry>
+          <xacro:if value="${mesh_file_collision == ' '}">
+            <box size="${length} ${width} ${height}" /> <!-- [m] [m] [m] -->
+          </xacro:if>
+          <xacro:unless value="${mesh_file_collision == ' '}">
+            <mesh filename="${mesh_file_collision}" />
+          </xacro:unless>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo>
+      <plugin
+          filename="libgazebo_plugin__body_auv.so"
+          name="${robot_namespace}_body_auv_plugin">
+          <robot_namespace>${robot_namespace}</robot_namespace>
+          <frame_id>${robot_namespace}/odom</frame_id>
+          <child_frame_id>${robot_namespace}/base_link</child_frame_id>
+          <odom_freq>20.0</odom_freq>
+          <Cx> 10.0 </Cx>
+          <Cw> 10.0 </Cw>
+          <buoyancy> 1.01 </buoyancy>
+          <buoyancy_offset> 0.15 </buoyancy_offset>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+ </robot>
